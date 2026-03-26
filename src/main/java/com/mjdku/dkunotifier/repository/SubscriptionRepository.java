@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     List<Subscription> findByBoard(Board board);
+    boolean existsByEmailAndBoard(String email, Board board);
 }

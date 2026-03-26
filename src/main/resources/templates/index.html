@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>단국대 포털 알림 구독</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1 { font-size: 22px; margin-bottom: 8px; }
+        p { color: #666; margin-bottom: 24px; }
+        .board-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        .board-item { display: flex; align-items: center; gap: 8px; }
+        input[type="email"] { width: 100%; padding: 10px; font-size: 15px;
+            border: 1px solid #ddd; border-radius: 6px; margin-bottom: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #1a4fa0; color: white;
+            border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #1540880; }
+        #result { margin-top: 16px; font-weight: bold; }
+    </style>
+</head>
+<body>
+<h1>🔔 단국대 포털 알림 구독</h1>
+<p>원하는 게시판을 선택하면 새 글이 올라올 때 이메일로 알려드려요.</p>
+
+<input type="email" id="email" placeholder="이메일 주소를 입력하세요" />
+
+<div class="board-list">
+    <div th:each="board : ${boards}" class="board-item">
+        <input type="checkbox" th:value="${board.id}" name="board" th:id="${board.id}"/>
+        <label th:for="${board.id}" th:text="${board.name}"></label>
+    </div>
+</div>
+
+<button onclick="subscribe()">구독하기</button>
+<div id="result"></div>
+
+<script>
+    function subscribe() {
+        const email = document.getElementById('email').value;
+        const checked = [...document.querySelectorAll('input[name=board]:checked')];
+        const boardIds = checked.map(c => c.value);
+
+        if (!email) { alert('이메일을 입력해주세요.'); return; }
+        if (boardIds.length === 0) { alert('게시판을 선택해주세요.'); return; }
+
+        fetch('/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `email=${encodeURIComponent(email)}&boardIds=${boardIds.join('&boardIds=')}`
+        })
+            .then(res => res.text())
+            .then(msg => document.getElementById('result').innerText = msg)
+            .catch(() => document.getElementById('result').innerText = '오류가 발생했습니다.');
+    }
+</script>
+</body>
+</html>
