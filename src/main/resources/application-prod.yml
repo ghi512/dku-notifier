@@ -1,7 +1,8 @@
 spring:
   datasource:
-    url: jdbc:${DATABASE_URL}
+    url: jdbc:postgresql://${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
+    password: ${DATABASE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
