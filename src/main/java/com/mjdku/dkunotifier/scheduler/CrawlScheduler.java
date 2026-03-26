@@ -1,6 +1,7 @@
 package com.mjdku.dkunotifier.scheduler;
 
 import com.mjdku.dkunotifier.crawler.CrawlService;
+import com.mjdku.dkunotifier.crawler.PortalLoginService;
 import com.mjdku.dkunotifier.domain.Board;
 import com.mjdku.dkunotifier.domain.Subscription;
 import com.mjdku.dkunotifier.mail.MailService;
@@ -14,27 +15,30 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class CrawlScheduler {
 
+    private final PortalLoginService portalLoginService;
     private final CrawlService crawlService;
     private final MailService mailService;
     private final BoardRepository boardRepository;
     private final SubscriptionRepository subscriptionRepository;
 
-    @Scheduled(cron = "0 45 21 * * *")
-    public void crawlAndNotify() {
+    @Scheduled(cron = "0 55 21 * * *")
+    public void crawlAndNotify() throws IOException {
         log.info("스케줄러 시작");
 
+        Map<String, String> cookies = portalLoginService.login();
         List<Board> boards = boardRepository.findAll();
 
         for(Board board : boards) {
             try {
                 // 새 글 감지
-                List<Post> newPosts = crawlService.crawlAndDetectNewPosts(board.getPath());
+                List<Post> newPosts = crawlService.crawlAndDetectNewPosts(board.getPath(), cookies);
                 if(newPosts.isEmpty()) continue;
 
                 // 구독자 조회

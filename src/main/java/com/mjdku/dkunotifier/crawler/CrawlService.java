@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,13 +26,13 @@ public class CrawlService {
     private final SeenPostRepository seenPostRepository;
 
     @Transactional
-    public List<Post> crawlAndDetectNewPosts(String boardPath) throws IOException {
+    public List<Post> crawlAndDetectNewPosts(String boardPath, Map<String, String> cookies) throws IOException {
         // DB에서 게시판 정보 조회
         Board board = boardRepository.findByPath(boardPath)
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 게시판: " + boardPath));
 
         // 크롤링
-        List<Post> posts = boardCrawlerService.crawl(boardPath);
+        List<Post> posts = boardCrawlerService.crawl(boardPath, cookies);
 
         // 새 글 필터링
         Set<String> seenPostSeqs = seenPostRepository.findByBoard(board)

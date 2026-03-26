@@ -20,12 +20,8 @@ import java.util.Map;
 public class BoardCrawlerService {
 
     private static final String BASE_URL = "https://portal.dankook.ac.kr";
-    private final PortalLoginService portalLoginService;
 
-    public List<Post> crawl(String boardPath) throws IOException {
-        // 로그인
-        Map<String, String> cookies = portalLoginService.login();
-
+    public List<Post> crawl(String boardPath, Map<String, String> cookies) throws IOException {
         // 게시판 접근
         Document doc = Jsoup.connect(BASE_URL + boardPath)
                 .cookies(cookies)
