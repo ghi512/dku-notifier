@@ -1,0 +1,12 @@
+INSERT INTO board (name, path) SELECT '공지 - 일반', '/p/CTT006' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT006');
+INSERT INTO board (name, path) SELECT '공지 - 학사', '/p/CTT007' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT007');
+INSERT INTO board (name, path) SELECT '공지 - 장학', '/p/CTT010' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT010');
+INSERT INTO board (name, path) SELECT '공지 - 국제', '/p/CTT008' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT008');
+INSERT INTO board (name, path) SELECT '공지 - 비교과', '/p/CTT011' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT011');
+INSERT INTO board (name, path) SELECT '공지 - 외국인유학생', '/p/CTT013' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT013');
+INSERT INTO board (name, path) SELECT '웅성웅성(죽전)', '/p/CTT016' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT016');
+INSERT INTO board (name, path) SELECT '분실물(죽전)', '/p/LOST01' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/LOST01');
+INSERT INTO board (name, path) SELECT '웅성웅성(천안)', '/p/CTT017' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT017');
+INSERT INTO board (name, path) SELECT '분실물(천안)', '/p/LOST02' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/LOST02');
+INSERT INTO board (name, path) SELECT '벼룩시장', '/p/CTT018' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT018');
+INSERT INTO board (name, path) SELECT '행사참여게시판', '/p/CTT019' WHERE NOT EXISTS (SELECT 1 FROM board WHERE path = '/p/CTT019');
