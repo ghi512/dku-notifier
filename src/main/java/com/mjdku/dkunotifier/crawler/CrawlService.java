@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -32,8 +34,13 @@ public class CrawlService {
         List<Post> posts = boardCrawlerService.crawl(boardPath);
 
         // 새 글 필터링
+        Set<String> seenPostSeqs = seenPostRepository.findByBoard(board)
+                .stream()
+                .map(SeenPost::getPostSeq)
+                .collect(Collectors.toSet());
+
         List<Post> newPosts = posts.stream()
-                .filter(post -> !seenPostRepository.existsByBoardAndPostSeq(board, post.getPostSeq()))
+                .filter(post -> !seenPostSeqs.contains(post.getPostSeq()))
                 .toList();
 
         // 새 글 SeenPost에 저장
