@@ -28,7 +28,7 @@ public class CrawlScheduler {
     private final BoardRepository boardRepository;
     private final SubscriptionRepository subscriptionRepository;
 
-    @Scheduled(cron = "0 55 21 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void crawlAndNotify() throws IOException {
         log.info("스케줄러 시작");
 
