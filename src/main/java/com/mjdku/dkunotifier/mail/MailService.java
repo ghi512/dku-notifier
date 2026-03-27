@@ -42,4 +42,20 @@ public class MailService {
         }
     }
 
+    public void sendVerificationEmail(String toEmail, String code) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setText("안녕하세요!\n\n" +
+                            "인증번호: " + code + "\n\n" +
+                            "5분 이내에 입력해주세요."
+            );
+
+            mailSender.send(message);
+            log.info("인증 메일 발송 완료 → {}", toEmail);
+        } catch (Exception e) {
+            log.error("인증 메일 발송 실패 → {} : {}", toEmail, e.getMessage());
+        }
+    }
 }
