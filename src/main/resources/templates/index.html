@@ -6,50 +6,133 @@
     <style>
         body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
         h1 { font-size: 22px; margin-bottom: 8px; }
-        p { color: #666; margin-bottom: 24px; }
-        .board-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        p.desc { color: #666; margin-bottom: 24px; }
+        .step { display: none; }
+        .step.active { display: block; }
+        .step-title { font-size: 14px; color: #888; margin-bottom: 12px; }
+        input[type="email"], input[type="text"] {
+            width: 100%; padding: 10px; font-size: 15px;
+            border: 1px solid #ddd; border-radius: 6px;
+            margin-bottom: 12px; box-sizing: border-box;
+        }
+        .btn-row { display: flex; gap: 8px; }
+        button {
+            flex: 1; padding: 12px; background: #1a4fa0; color: white;
+            border: none; border-radius: 6px; font-size: 15px; cursor: pointer;
+        }
+        button:hover { background: #153d80; }
+        button.secondary { background: #fff; color: #1a4fa0; border: 1px solid #1a4fa0; }
+        .board-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .board-item { display: flex; align-items: center; gap: 8px; }
-        input[type="email"] { width: 100%; padding: 10px; font-size: 15px;
-            border: 1px solid #ddd; border-radius: 6px; margin-bottom: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #1a4fa0; color: white;
-            border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #1540880; }
-        #result { margin-top: 16px; font-weight: bold; }
+        .result { margin-top: 12px; font-size: 14px; font-weight: bold; }
+        .result.error { color: #e53e3e; }
+        .result.success { color: #38a169; }
     </style>
 </head>
 <body>
 <h1>🔔 단국대 포털 알림 구독</h1>
-<p>원하는 게시판을 선택하면 새 글이 올라올 때 이메일로 알려드려요.</p>
+<p class="desc">원하는 게시판에 새 글이 올라오면 이메일로 알려드려요.</p>
 
-<input type="email" id="email" placeholder="이메일 주소를 입력하세요" />
-
-<div class="board-list">
-    <div th:each="board : ${boards}" class="board-item">
-        <input type="checkbox" th:value="${board.id}" name="board" th:id="${board.id}"/>
-        <label th:for="${board.id}" th:text="${board.name}"></label>
-    </div>
+<!-- Step 1: 이메일 입력 -->
+<div class="step active" id="step1">
+    <p class="step-title">1단계 · 이메일 인증</p>
+    <input type="email" id="email" placeholder="이메일 주소를 입력하세요" />
+    <button onclick="sendCode()">인증번호 발송</button>
+    <div class="result" id="result1"></div>
 </div>
 
-<button onclick="subscribe()">구독하기</button>
-<div id="result"></div>
+<!-- Step 2: 인증번호 입력 -->
+<div class="step" id="step2">
+    <p class="step-title">2단계 · 인증번호 확인</p>
+    <input type="text" id="code" placeholder="6자리 인증번호 입력" maxlength="6" />
+    <div class="btn-row">
+        <button class="secondary" onclick="goStep(1)">이전</button>
+        <button onclick="verifyCode()">확인</button>
+    </div>
+    <div class="result" id="result2"></div>
+</div>
+
+<!-- Step 3: 게시판 선택 -->
+<div class="step" id="step3">
+    <p class="step-title">3단계 · 게시판 선택</p>
+    <div class="board-list">
+        <div th:each="board : ${boards}" class="board-item">
+            <input type="checkbox" th:value="${board.id}" name="board" th:id="${board.id}"/>
+            <label th:for="${board.id}" th:text="${board.name}"></label>
+        </div>
+    </div>
+    <div class="btn-row">
+        <button class="secondary" onclick="goStep(2)">이전</button>
+        <button onclick="subscribe()">구독하기</button>
+    </div>
+    <div class="result" id="result3"></div>
+</div>
 
 <script>
-    function subscribe() {
+    function goStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+    }
+
+    function showResult(id, msg, isError) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'result ' + (isError ? 'error' : 'success');
+    }
+
+    async function sendCode() {
+        const email = document.getElementById('email').value;
+        if (!email) { showResult('result1', '이메일을 입력해주세요.', true); return; }
+
+        const res = await fetch('/send-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `email=${encodeURIComponent(email)}`
+        });
+        const msg = await res.text();
+
+        if (res.ok) {
+            showResult('result1', msg, false);
+            setTimeout(() => goStep(2), 1000);
+        } else {
+            showResult('result1', msg, true);
+        }
+    }
+
+    async function verifyCode() {
+        const email = document.getElementById('email').value;
+        const code = document.getElementById('code').value;
+        if (!code) { showResult('result2', '인증번호를 입력해주세요.', true); return; }
+
+        const res = await fetch('/verify-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`
+        });
+        const msg = await res.text();
+
+        if (res.ok) {
+            showResult('result2', msg, false);
+            setTimeout(() => goStep(3), 1000);
+        } else {
+            showResult('result2', msg, true);
+        }
+    }
+
+    async function subscribe() {
         const email = document.getElementById('email').value;
         const checked = [...document.querySelectorAll('input[name=board]:checked')];
         const boardIds = checked.map(c => c.value);
 
-        if (!email) { alert('이메일을 입력해주세요.'); return; }
-        if (boardIds.length === 0) { alert('게시판을 선택해주세요.'); return; }
+        if (boardIds.length === 0) { showResult('result3', '게시판을 선택해주세요.', true); return; }
 
-        fetch('/subscribe', {
+        const res = await fetch('/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `email=${encodeURIComponent(email)}&boardIds=${boardIds.join('&boardIds=')}`
-        })
-            .then(res => res.text())
-            .then(msg => document.getElementById('result').innerText = msg)
-            .catch(() => document.getElementById('result').innerText = '오류가 발생했습니다.');
+        });
+        const msg = await res.text();
+        showResult('result3', msg, !res.ok);
     }
 </script>
 </body>
