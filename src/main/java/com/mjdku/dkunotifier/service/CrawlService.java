@@ -1,8 +1,9 @@
-package com.mjdku.dkunotifier.crawler;
+package com.mjdku.dkunotifier.service;
 
+import com.mjdku.dkunotifier.crawler.BoardCrawler;
 import com.mjdku.dkunotifier.domain.Board;
 import com.mjdku.dkunotifier.domain.SeenPost;
-import com.mjdku.dkunotifier.model.Post;
+import com.mjdku.dkunotifier.dto.Post;
 import com.mjdku.dkunotifier.repository.BoardRepository;
 import com.mjdku.dkunotifier.repository.SeenPostRepository;
 import jakarta.transaction.Transactional;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CrawlService {
 
-    private final BoardCrawlerService boardCrawlerService;
+    private final BoardCrawler boardCrawler;
     private final BoardRepository boardRepository;
     private final SeenPostRepository seenPostRepository;
 
@@ -32,7 +33,7 @@ public class CrawlService {
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 게시판: " + boardPath));
 
         // 크롤링
-        List<Post> posts = boardCrawlerService.crawl(boardPath, cookies);
+        List<Post> posts = boardCrawler.crawl(boardPath, cookies);
 
         // 새 글 필터링
         Set<String> seenPostSeqs = seenPostRepository.findByBoard(board)

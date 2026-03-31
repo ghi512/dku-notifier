@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PortalLoginService {
+public class PortalLoginClient {
 
     private static final String LOGIN_URL =
             "https://portal.dankook.ac.kr/proc/Login.eps";

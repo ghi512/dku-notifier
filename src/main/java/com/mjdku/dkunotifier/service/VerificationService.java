@@ -1,7 +1,6 @@
 package com.mjdku.dkunotifier.service;
 
 import com.mjdku.dkunotifier.domain.VerificationToken;
-import com.mjdku.dkunotifier.mail.MailService;
 import com.mjdku.dkunotifier.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

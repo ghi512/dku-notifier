@@ -1,6 +1,6 @@
 package com.mjdku.dkunotifier.crawler;
 
-import com.mjdku.dkunotifier.model.Post;
+import com.mjdku.dkunotifier.dto.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BoardCrawlerService {
+public class BoardCrawler {
 
     private static final String BASE_URL = "https://portal.dankook.ac.kr";
 

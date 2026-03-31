@@ -1,13 +1,11 @@
-package com.mjdku.dkunotifier.mail;
+package com.mjdku.dkunotifier.service;
 
-import com.mjdku.dkunotifier.model.Post;
+import com.mjdku.dkunotifier.dto.Post;
 import com.resend.Resend;
 import com.resend.services.emails.model.CreateEmailOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +14,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class MailService {
-
-    private final JavaMailSender mailSender;
 
     @Value("${resend.api-key}")
     private String apiKey;

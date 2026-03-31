@@ -1,4 +1,4 @@
-package com.mjdku.dkunotifier.model;
+package com.mjdku.dkunotifier.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

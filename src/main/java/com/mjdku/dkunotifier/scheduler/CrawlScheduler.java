@@ -1,11 +1,11 @@
 package com.mjdku.dkunotifier.scheduler;
 
-import com.mjdku.dkunotifier.crawler.CrawlService;
-import com.mjdku.dkunotifier.crawler.PortalLoginService;
+import com.mjdku.dkunotifier.service.CrawlService;
+import com.mjdku.dkunotifier.crawler.PortalLoginClient;
 import com.mjdku.dkunotifier.domain.Board;
 import com.mjdku.dkunotifier.domain.Subscription;
-import com.mjdku.dkunotifier.mail.MailService;
-import com.mjdku.dkunotifier.model.Post;
+import com.mjdku.dkunotifier.service.MailService;
+import com.mjdku.dkunotifier.dto.Post;
 import com.mjdku.dkunotifier.repository.BoardRepository;
 import com.mjdku.dkunotifier.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CrawlScheduler {
 
-    private final PortalLoginService portalLoginService;
+    private final PortalLoginClient portalLoginClient;
     private final CrawlService crawlService;
     private final MailService mailService;
     private final BoardRepository boardRepository;
@@ -32,7 +32,7 @@ public class CrawlScheduler {
     public void crawlAndNotify() throws IOException {
         log.info("스케줄러 시작");
 
-        Map<String, String> cookies = portalLoginService.login();
+        Map<String, String> cookies = portalLoginClient.login();
         List<Board> boards = boardRepository.findAll();
 
         for(Board board : boards) {
