@@ -24,3 +24,7 @@ spring:
       mail.smtp:
         ssl.enable: true
         starttls.enable: true
+
+resend:
+  api-key: ${RESEND_API_KEY}
+  from: onboarding@resend.dev

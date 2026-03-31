@@ -1,6 +1,8 @@
 package com.mjdku.dkunotifier.mail;
 
 import com.mjdku.dkunotifier.model.Post;
+import com.resend.Resend;
+import com.resend.services.emails.model.CreateEmailOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,12 +10,17 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender mailSender;
+
+    @Value("${resend.api-key}")
+    private String apiKey;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -24,18 +31,20 @@ public class MailService {
             Post post
     ) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject("[단국대 알림] " + boardName + " - " + post.getTitle());
-            message.setText("새 글이 올라왔어요!\n\n" +
+            Resend resend = new Resend(apiKey);
+            CreateEmailOptions request = CreateEmailOptions.builder()
+                    .from(fromEmail)
+                    .to(List.of(toEmail))
+                    .subject("[단국대 알림] " + boardName + " - " + post.getTitle())
+                    .text("새 글이 올라왔어요!\n\n" +
                             "게시판: " + boardName + "\n" +
                             "제목: " + post.getTitle() + "\n" +
                             "작성자: " + post.getAuthor() + "\n" +
                             "날짜: " + post.getDate() + "\n\n" +
-                            "바로가기: " + post.getUrl()
-            );
-            mailSender.send(message);
+                            "바로가기: " + post.getUrl())
+                    .build();
+
+            resend.emails().send(request);
             log.info("메일 발송 완료 → {}", toEmail);
         } catch (Exception e) {
             log.info("메일 발송 실패 → {} : {}", toEmail, e.getMessage());
@@ -44,15 +53,17 @@ public class MailService {
 
     public void sendVerificationEmail(String toEmail, String code) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setText("안녕하세요!\n\n" +
-                            "인증번호: " + code + "\n\n" +
-                            "5분 이내에 입력해주세요."
-            );
+            Resend resend = new Resend(apiKey);
+            CreateEmailOptions request = CreateEmailOptions.builder()
+                    .from(fromEmail)
+                    .to(List.of(toEmail))
+                    .subject("[단국대 알림] 이메일 인증번호")
+                    .text("안녕하세요!\n\n" +
+                                    "인증번호: " + code + "\n\n" +
+                                    "5분 이내에 입력해주세요.")
+                            .build();
 
-            mailSender.send(message);
+            resend.emails().send(request);
             log.info("인증 메일 발송 완료 → {}", toEmail);
         } catch (Exception e) {
             log.error("인증 메일 발송 실패 → {} : {}", toEmail, e.getMessage());
