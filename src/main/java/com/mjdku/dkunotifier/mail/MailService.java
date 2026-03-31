@@ -22,7 +22,7 @@ public class MailService {
     @Value("${resend.api-key}")
     private String apiKey;
 
-    @Value("${spring.mail.username}")
+    @Value("${resend.from}")
     private String fromEmail;
 
     public void sendNewPostNotification(
